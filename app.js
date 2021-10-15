@@ -23,6 +23,95 @@ app.get("/get-user", async (req,res) =>{
     res.json(rows[0])
 })
 
+
+
+//Estos son endpoint de Bryan
+
+app.get("/get-product", async (request, response) => {
+    const [rows, fields] = await connection.execute("SELECT * from products");
+
+    //console.log({ data: rows });
+    response.json({ data: rows }); //En este puedo preguntar por data que se encuentra dentro de un JSON   { data .....}
+  });
+
+
+  
+app.get("/get-Unproduct", async (request, response) => {
+    //Se debe enviar por postman en la parte params productID = #
+    console.log(request.query.productID);
+    const [rows, fields] = await connection.execute(
+      `SELECT * FROM products WHERE productID=${request.query.productID};`
+    );
+    //console.log(rows.length);
+    response.json(rows);
+    console.log(rows);
+  });
+
+
+  app.post("/add-product", async (req, resp) => {
+    //const [productDescript, productCost, productState] = req.body;
+    //Destructuración
+    const { productDescript, productCost, productState } = req.body;
+    try {
+      await connection.execute(
+        `INSERT INTO products (productDescript,productCost,productState) VALUES('${productDescript}',${productCost},${productState})`
+      );
+  
+      resp.json({ status: "ok" });
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  );
+
+
+  app.post("/find-product", async (req, resp) => {
+    //const [productDescript, productCost, productState] = req.body;
+    //Destructuración
+  
+    const data = req.body;
+    console.log(data.productID);
+  
+    try {
+      const [rows, fields]= await connection.execute(
+        `SELECT * FROM products WHERE productID=${data.productID};`    
+        );
+  
+    resp.json(rows);
+    console.log(rows);
+    
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  );
+
+
+
+  app.put("/actualizar-product", async (req, resp) => {
+    //const [productDescript, productCost, productState] = req.body;
+    //Destructuración
+  
+    const data = req.body;
+    console.log(data);
+  
+    try {
+      const [rows, fields]= await connection.execute(
+        `UPDATE products SET productDescript= '${data.productDescript}', productCost=${data.productCost},productState=${data.productState} WHERE productID=${data.productID};`    
+        );
+  
+    resp.json({ status: "ok" });
+    
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  );
+  //Fin endpoint de  de Bryan
+
+
+
+
 /* app.post("/add-product", async (req, res) => {
     try {
         console.log(req.body)
