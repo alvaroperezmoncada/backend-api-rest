@@ -12,18 +12,20 @@ let connection; //almacena la conexion a la Db
 app.use(express.json());
 //app.use(cors({ origin: true }))
 
+//Inician End points Alvaro
+
 app.get("/get-users", async (request,response) =>{
     const [rows, fields] = await connection.execute("select * from users");
     response.json({data:rows});
 })
 
-app.get("/get-user", async (req,res) =>{
-    const email = req.query.email;
+app.get("/get-user", async (request,response) =>{
+    const email = request.query.email;
     const [rows, fields] = await connection.execute(`SELECT * FROM users where email='${email}'`);
-    res.json(rows[0])
+    response.json(rows[0])
 })
 
-
+// Finalizan end point Alvaro
 
 //Estos son endpoint de Bryan
 
@@ -108,35 +110,6 @@ app.get("/get-Unproduct", async (request, response) => {
   }
   );
   //Fin endpoint de  de Bryan
-
-
-
-
-/* app.post("/add-product", async (req, res) => {
-    try {
-        console.log(req.body)
-        const {name, price, stock, description} = req.body;
-        await connection.execute(`INSERT INTO products (name, price, stock, description) VALUES('${name}',${price}, ${stock}, '${description}')`);
-        res.json({status:"ok"})
-    }
-    catch (error) {
-        console.log(error);
-        res.json(error)
-    }
-    
-})
-
-app.put("/update-product", (req, res) => {
-    const product = req.body;
-    console.log(product.name)
-    res.json(product)
-})
-app.delete("/delete-product", (req, res) => {
-    const product = req.body;
-    console.log(product.name)
-    res.json(product)
-}) */
-
 
 app.listen(port, async() =>{
     connection = await mysql.createConnection({
