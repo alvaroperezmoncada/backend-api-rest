@@ -1,6 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const app = express();
+const cors = require('cors');
 const mysql = require('mysql2/promise');
 const port = process.env.DB_PORT;
 const bluebird = require('bluebird');
@@ -10,7 +11,7 @@ let connection; //almacena la conexion a la Db
 
 //Configura servidor para recibir forma JSON
 app.use(express.json());
-//app.use(cors({ origin: true }))
+app.use(cors({ origin: true }))
 
 //Inician End points Alvaro
 
