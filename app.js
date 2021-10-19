@@ -8,10 +8,10 @@ const bluebird = require('bluebird');
 const e = require('express');
 
 let connection; //almacena la conexion a la Db
-
+app.use
 //Configura servidor para recibir forma JSON
 app.use(express.json());
-app.use(cors({ origin: true }))
+//app.use(cors({ origin: true }))
 
 //Inician End points Alvaro
 
@@ -25,6 +25,14 @@ app.get("/get-user", async (request,response) =>{
     const [rows, fields] = await connection.execute(`SELECT * FROM users where email='${email}'`);
     response.json(rows[0])
 })
+
+app.get("/get-user-email", async (request,response) =>{
+    const email = request.query.email;
+    const [rows, fields] = await connection.execute(`SELECT * FROM users where email like '${email}'`);
+    response.json(rows[0])
+})
+
+
 
 // Finalizan end point Alvaro
 
