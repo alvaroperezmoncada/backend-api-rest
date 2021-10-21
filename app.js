@@ -32,6 +32,20 @@ app.get("/get-user-email", async (request,response) =>{
     response.json(rows[0])
 })
 
+app.put("/update-user", async (request, response) => {
+    const data = request.body;
+    try {
+      const [rows, fields]= await connection.execute(
+        `UPDATE users SET estado= '${data.estado}' WHERE users.id_user=${data.id_user};`    
+        );  
+    resp.json({ status: "ok" });
+    
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  );
+
 
 
 // Finalizan end point Alvaro
