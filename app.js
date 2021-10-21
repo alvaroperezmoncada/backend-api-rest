@@ -28,7 +28,7 @@ app.get("/get-user", async (request,response) =>{
 
 app.get("/get-user-email", async (request,response) =>{
     const email = request.query.email;
-    const [rows, fields] = await connection.execute(`SELECT * FROM users where email like '${email}'`);
+    const [rows, fields] = await connection.execute(`SELECT * FROM users where email like %'${email}'%`);
     response.json(rows[0])
 })
 
