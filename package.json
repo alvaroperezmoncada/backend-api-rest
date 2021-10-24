@@ -1,0 +1,21 @@
+{
+  "name": "sistema-ventas-api-rest",
+  "version": "1.0.0",
+  "description": "sistema-ventas-api-rest",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon app.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "nodemon": "^2.0.13"
+  },
+  "dependencies": {
+    "bluebird": "^3.7.2",
+    "cors": "^2.8.5",
+    "dotenv": "^10.0.0",
+    "express": "^4.17.1",
+    "mysql2": "^2.3.0"
+  }
+}
