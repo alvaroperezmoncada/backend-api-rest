@@ -3,7 +3,7 @@ const express = require('express');
 const app = express();
 const cors = require('cors');
 const mysql = require('mysql2/promise');
-const port = process.env.DB_PORT;
+const port = 3001;
 const bluebird = require('bluebird');
 const e = require('express');
 
@@ -12,7 +12,7 @@ app.use
 //Configura servidor para recibir forma JSON
 app.use(express.json());
 app.use(cors({ origin: true }))
-
+app.set('port',process.env.PORT || port)
 //Inician End points Alvaro
 
 app.get("/get-users", async (request,response) =>{
@@ -295,7 +295,7 @@ app.post("/get-total-sale", async (req, res) => {
 //FIn ventas
 
   
-app.listen(port, async() =>{
+app.listen(app.get('port'), async() =>{
     connection = await mysql.createConnection({
         host: process.env.DB_HOST,
         user: process.env.DB_USER,
