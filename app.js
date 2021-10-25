@@ -11,7 +11,7 @@ let connection; //almacena la conexion a la Db
 app.use
 //Configura servidor para recibir forma JSON
 app.use(express.json());
-//app.use(cors({ origin: true }))
+app.use(cors({ origin: true }))
 
 //Inician End points Alvaro
 
@@ -39,10 +39,17 @@ app.get("/get-user-id", async (request,response) =>{
 })
 
 
+app.put("/update-product", (req, res) => {
+  const product = req.body;
+  console.log(product.name)
+  res.json(product)
+})
+
 
 app.put("/update-user", async (request, response) => {
-    const {id_user, email} = request.body;
     try {
+      const {id_user, user_name, email, estado, admin} = request.body;
+
       const [rows, fields]= await connection.execute(
         `UPDATE users SET estado= '${data.estado}', admin= '${data.admin}'' WHERE users.id_user=${data.id_user};`    
         );  
@@ -126,6 +133,7 @@ app.get("/get-Unproduct", async (request, response) => {
     //Destructuración
   
     const data = req.body;
+    console.log(data);
   
     try {
       const [rows, fields]= await connection.execute(
@@ -139,8 +147,152 @@ app.get("/get-Unproduct", async (request, response) => {
     }
   }
   );
+
+
   //Fin endpoint de  de Bryan
 
+//ventas
+//listar ventas
+app.get("/get-sales", async (req, res) => {
+  const [rows, fields] = await connection.execute(
+    `SELECT * FROM sales`
+  );
+  res.json(rows);
+  console.log(rows);
+})
+
+//buscar id
+app.post("/find-sale-by-sale-id", async (req, res) => {
+  console.log(req.body.sale_ID);
+    const [rows, fields] = await connection.execute(
+      `SELECT * FROM sales WHERE sale_ID=${req.body.sale_ID};`
+    );
+    //console.log(rows.length);
+    res.json(rows);
+    console.log(rows);
+})
+
+//buscar nombre
+app.get("/find-sale-by-name", async (req, res) => {
+  console.log(req.query.nombre_Cliente);
+    const [rows, fields] = await connection.execute(
+      `SELECT * FROM sales WHERE nombre_Cliente=${req.query.nombre_Cliente};`
+    );
+    //console.log(rows.length);
+    res.json(rows);
+    console.log(rows);
+})
+
+//buscar identificacion
+app.get("/find-sale-by-id-client", async (req, res) => {
+  console.log(req.query.Id_cliente);
+    const [rows, fields] = await connection.execute(
+      `SELECT * FROM sales WHERE Id_cliente=${req.query.Id_cliente};`
+    );
+    //console.log(rows.length);
+    res.json(rows);
+    console.log(rows);
+})
+
+//obtener ultimo id generado de factura
+app.get("/get-last-sale", async (request, response) => {
+  const [rows, fields] = await connection.execute("SELECT sale_ID FROM sales s ORDER BY 1 DESC LIMIT 1");
+
+  //console.log({ data: rows });
+  response.json({ data: rows }); //En este puedo preguntar por data que se encuentra dentro de un JSON   { data .....}
+});
+
+//guardar venta
+app.post("/add-sale", async (req, resp) => {
+  const { fecha_venta, Id_cliente, nombre_Cliente, valorTotal, estado, vendedor } = req.body;
+  try {
+    await connection.execute(
+      `INSERT INTO sales (fecha_venta, Id_cliente, nombre_Cliente, valorTotal, estado, vendedor) VALUES('${fecha_venta}','${Id_cliente}','${nombre_Cliente}', ${valorTotal},'${estado}','${vendedor}')`
+    );
+    const [rows, fields] = await connection.execute("SELECT sale_ID FROM sales s ORDER BY 1 DESC LIMIT 1");
+    resp.json({ data: rows});
+  } catch (error) {
+    console.log(error);
+  }
+}
+); 
+
+//Actualizar ventas
+app.post("/update-sale", async (req, resp) => {
+  const { sale_ID, fecha_venta, Id_cliente, nombre_Cliente, valorTotal, estado, vendedor } = req.body;
+  try {
+    await connection.execute(
+      `UPDATE sales SET fecha_venta = '${fecha_venta}', Id_cliente = '${Id_cliente}', nombre_Cliente = '${nombre_Cliente}', valorTotal = ${valorTotal}, estado = '${estado}', vendedor = '${vendedor}' WHERE sale_ID=(${sale_ID})`
+    );
+    const [rows, fields] = await connection.execute("SELECT sale_ID FROM sales s ORDER BY 1 DESC LIMIT 1");
+    resp.json({ data: rows});
+  } catch (error) {
+    console.log(error);
+  }
+}
+); 
+
+//Agregar producto por venta
+app.post("/add-product-sale", async (req, resp) => {
+  const { productID, productDescrip, sale_code, saleDetailAmount, costUnit, saleDetailTotalProduct } = req.body;
+  try {
+    await connection.execute(
+      `INSERT INTO salesdetail (productID, productDescrip, sale_code, saleDetailAmount, costUnit, saleDetailTotalProduct) VALUES(${productID}, '${productDescrip}', ${sale_code}, ${saleDetailAmount}, ${costUnit}, ${saleDetailTotalProduct})`
+    );
+    const [rows, fields] = await connection.execute("SELECT sale_ID FROM sales s ORDER BY 1 DESC LIMIT 1");
+    resp.json({ data: rows});
+  } catch (error) {
+    console.log(error);
+  }
+}
+); 
+
+//obtener productos por ventas
+app.post("/find-products-by-sale", async (req, res) => {
+  console.log(req.body.sale_code);
+    const [rows, fields] = await connection.execute(
+      `SELECT sd.saleDetail_ID, sd.productID, sd.sale_code, sd.saleDetailAmount, sd.saleDetailTotalProduct, p.productDescript, p.productCost FROM products p INNER JOIN salesdetail sd  on p.productID = sd.productID WHERE sd.sale_code =${req.body.sale_code};`
+    );
+    //console.log(rows.length);
+    res.json(rows);
+    console.log(rows);
+})
+
+//eliminar producto de venta
+app.post("/delete-product-sale", async (req, resp) => {
+  const { saleDetail_ID } = req.body;
+  try {
+    await connection.execute(
+      `UPDATE salesdetail SET sale_code = 69 WHERE saleDetail_ID=(${saleDetail_ID})`
+    );
+    const [rows, fields] = await connection.execute("SELECT sale_ID FROM sales s ORDER BY 1 DESC LIMIT 1");
+    resp.json({ data: rows});
+  } catch (error) {
+    console.log(error);
+  }/*
+  await connection.execute(`DELETE FROM salesdetail WHERE saleDetail_ID = ${saleDetail_ID}`);
+  response.json({ status: "ok" });*/
+});
+
+//productos disponibles
+app.get("/get-products-available", async (req, res) => {
+  const [rows, fields] = await connection.execute(
+    `SELECT * FROM products WHERE productState = 1`
+  );
+  res.json(rows);
+  console.log(rows);
+})
+
+//total de la venta 
+app.post("/get-total-sale", async (req, res) => {
+  console.log(req.body.sale_code);
+    const [rows, fields] = await connection.execute(
+      `SELECT SUM(s.saleDetailTotalProduct) as SUMA FROM salesdetail s WHERE sale_code =${req.body.sale_code};`
+    );
+    res.json(rows);
+    console.log(rows);
+})
+//FIn ventas
 
   
 app.listen(port, async() =>{
