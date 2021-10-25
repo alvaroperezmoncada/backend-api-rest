@@ -28,15 +28,23 @@ app.get("/get-user", async (request,response) =>{
 
 app.get("/get-user-email", async (request,response) =>{
     const email = request.query.email;
-    const [rows, fields] = await connection.execute(`SELECT * FROM users where email like %'${email}'%`);
-    response.json(rows[0])
+    const [rows, fields] = await connection.execute(`SELECT * FROM users where email like '%${email}%'`);
+    response.json({data:rows});
 })
 
+app.get("/get-user-id", async (request,response) =>{
+    const email = request.query.id_user;
+    const [rows, fields] = await connection.execute(`SELECT * FROM users where id='${id_user}'`);
+    response.json(rows[0]);
+})
+
+
+
 app.put("/update-user", async (request, response) => {
-    const data = request.body;
+    const {id_user, email} = request.body;
     try {
       const [rows, fields]= await connection.execute(
-        `UPDATE users SET estado= '${data.estado}' WHERE users.id_user=${data.id_user};`    
+        `UPDATE users SET estado= '${data.estado}', admin= '${data.admin}'' WHERE users.id_user=${data.id_user};`    
         );  
     resp.json({ status: "ok" });
     
@@ -118,7 +126,6 @@ app.get("/get-Unproduct", async (request, response) => {
     //Destructuración
   
     const data = req.body;
-    console.log(data);
   
     try {
       const [rows, fields]= await connection.execute(
@@ -134,6 +141,8 @@ app.get("/get-Unproduct", async (request, response) => {
   );
   //Fin endpoint de  de Bryan
 
+
+  
 app.listen(port, async() =>{
     connection = await mysql.createConnection({
         host: process.env.DB_HOST,
