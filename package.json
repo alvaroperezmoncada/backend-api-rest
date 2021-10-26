@@ -4,7 +4,9 @@
   "description": "sistema-ventas-api-rest",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon app.js"
+    "start": "node app.js",
+    "dev": "nodemon app.js"
+
   },
   "author": "",
   "license": "ISC",
